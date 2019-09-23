@@ -1,4 +1,4 @@
-import uuid # Required for unique book instances
+import uuid  # Required for unique book instances
 
 from django.db import models
 from django.urls import reverse  # Used to generate URLs by reversing the URL patterns
@@ -13,70 +13,55 @@ class Genre(models.Model):
         return self.name
 
 
-class Book(models.Model):
-    """Model representing a general board game (but not a specific copy of one)."""
-    title = models.CharField(max_length=200)
+class Location(models.Model):
+    """Model representing a place or address"""
+    address = models.CharField(max_length=200, help_text='Enter a board game genre (e.g. Roll of the Die)')
 
-    # Foreign Key used because board game can only have one author, but authors can have multiple board games
-    # Author as a string rather than object because it hasn't been declared yet in the file
+    def __str__(self):
+        """String for representing the Model object."""
+        return self.address
+
+
+class Boardgame(models.Model):
+    """Model representing a general board game."""
+    name = models.CharField(max_length=200)
     author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True)
-
     summary = models.TextField(max_length=1000, help_text='Enter a brief description of the board game')
-    isbn = models.CharField('ISBN', max_length=13,
-                            help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>')
-
     # ManyToManyField used because genre can contain many board games. Board games can cover many genres.
     # Genre class has already been defined so we can specify the object above.
     genre = models.ManyToManyField(Genre, help_text='Select a genre for this board game')
 
     def __str__(self):
         """String for representing the Model object."""
-        return self.title
+        return self.name
 
     def get_absolute_url(self):
         """Returns the url to access a detail record for this board game."""
         return reverse('book-detail', args=[str(self.id)])
 
 
-class BookInstance(models.Model):
-    """Model representing a specific copy of a book (i.e. that can be borrowed from the library)."""
+class Playthrough(models.Model):
+    """Model representing a playthrough of one game."""
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
-        help_text='Unique ID for this particular book across whole library')
-    book = models.ForeignKey('Book', on_delete=models.SET_NULL, null=True)
-    imprint = models.CharField(max_length=200)
-    due_back = models.DateField(null=True, blank=True)
-
-    LOAN_STATUS = (
-        ('m', 'Maintenance'),
-        ('o', 'On loan'),
-        ('a', 'Available'),
-        ('r', 'Reserved'),
-    )
-
-    status = models.CharField(
-        max_length=1,
-        choices=LOAN_STATUS,
-        blank=True,
-        default='m',
-        help_text='Book availability',
-    )
+        help_text='Unique ID for this playthrough')
+    boardgame = models.ForeignKey(Boardgame, on_delete=models.SET_NULL, null=True)
+    date = models.DateField(null=True, blank=True)
+    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True)
 
     class Meta:
-        ordering = ['due_back']
+        ordering = ['date']
 
     def __str__(self):
         """String for representing the Model object."""
-        return f'{self.id} ({self.book.title})'
+        return f'{self.date} ({self.boardgame.name})'
 
 
 class Author(models.Model):
     """Model representing an author."""
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    date_of_birth = models.DateField(null=True, blank=True)
-    date_of_death = models.DateField('Died', null=True, blank=True)
 
     class Meta:
         ordering = ['last_name', 'first_name']
