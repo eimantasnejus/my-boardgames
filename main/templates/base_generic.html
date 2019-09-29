@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Jekyll v3.8.5">
-    {% block title %}<title>My Boardgamesd</title>{% endblock %}
+    {% block title %}<title>My Boardgames</title>{% endblock %}
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.3/examples/starter-template/">
     <!-- Bootstrap core CSS -->
@@ -27,28 +27,38 @@
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="{% url 'boardgames' %}">Boardgames <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="{% url 'boardgames' %}">All Boardgames <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'authors' %}">All Authors</a>
             </li>
-            {% if user.is_authenticated %}#}
+            {% if user.is_authenticated %}
+            <li>
+                <a class="nav-link" href="#">My Boardgames</a>
+            </li>
+            <li>
+                <a class="nav-link" href="#">My Playthroughs</a>
+            </li>
+            {% endif %}
+        </ul>
+        <form class="form-inline my-2 my-lg-0 ml-auto" action="{% url 'search-by-name' %}" method="get">
+            <input id="boardgame-search-box" class="form-control mr-sm-2" name="name" type="text" placeholder="e.g.: Gloomhaven" aria-label="Search">
+            <button class="btn btn-secondary my-2 my-sm-0" type="submit" value="OK">Search</button>
+        </form>
+        <ul class="navbar-nav">
+            {% if user.is_authenticated %}
                 <li class="nav-item">
-                    User: {{ user.get_username }}
+                    <a class="nav-link" href="#">User: {{ user.get_username }}</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'logout'%}?next={{request.path}}">Logout</a>
+                    <a class="nav-link" href="{% url 'logout'%}?next={{request.path}}">Logout</a>
                 </li>
             {% else %}
                 <li class="nav-item">
-                    <a href="{% url 'login'%}?next={{request.path}}">Login</a>
+                    <a class="nav-link" href="{% url 'login'%}?next={{request.path}}">Login</a>
                 </li>
             {% endif %}
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-            <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-        </form>
     </div>
 </nav>
 
@@ -56,6 +66,6 @@
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
-<script>window.jQuery || document.write('<script src="/docs/4.3/assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+<!--<script>window.jQuery || document.write('<script src="/docs/4.3/assets/js/vendor/jquery-slim.min.js"><\/script>')</script>-->
 </body>
 </html>

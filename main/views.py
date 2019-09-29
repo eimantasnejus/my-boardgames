@@ -1,6 +1,15 @@
+import re
+import requests
+import xml.etree.ElementTree as ET
 from django.shortcuts import render
 from django.views import generic
 from main.models import Boardgame, Author, Playthrough, Genre, Location
+
+
+def clean_html(raw_html):
+    cleaner = re.compile('<.*?>')
+    clean_text = re.sub(cleaner, ' ', raw_html)
+    return clean_text
 
 
 def index(request):
@@ -28,6 +37,57 @@ def index(request):
 
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
+
+
+def search_by_name(request):
+    url = "https://www.boardgamegeek.com/xmlapi/search"
+    querystring = {"search": request.GET.get('name')}
+    headers = {
+        'cache-control': "no-cache",
+    }
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    root = ET.ElementTree(ET.fromstring(response.text)).getroot()
+    data = []
+    for boardgame in root:
+        bgg_id = boardgame.attrib.get('objectid')
+        name = boardgame.find('name').text
+        year = boardgame.find('yearpublished').text if boardgame.find('yearpublished') is not None else "-"
+        data.append({
+            'name': name,
+            'year': year,
+            'bgg_id': bgg_id
+        })
+    context = {
+        'name': request.GET.get('name'),
+        'data': data
+    }
+    return render(request, 'main/search_by_name.html', context)
+
+
+def search_by_id(request, bgg_id):
+    url = "https://www.boardgamegeek.com/xmlapi/game/" + bgg_id
+    querystring = {"search": request.GET.get('id')}
+    headers = {
+        'cache-control': "no-cache",
+    }
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    root = ET.ElementTree(ET.fromstring(response.text)).getroot()
+    data = []
+    for boardgame in root:
+        name = boardgame.find('name').text
+        year = boardgame.find('yearpublished').text if boardgame.find('yearpublished') is not None else "-"
+        description = clean_html(boardgame.find('description').text)
+        image_url = boardgame.find('image').text
+        data.append({
+            'name': name,
+            'year': year,
+            'description': description,
+            'image_url': image_url,
+        })
+    context = {
+        'data': data
+    }
+    return render(request, 'main/search_by_id.html', context)
 
 
 class BoardgameListView(generic.ListView):

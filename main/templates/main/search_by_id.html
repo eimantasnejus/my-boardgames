@@ -1,0 +1,11 @@
+{% extends "base_generic.html" %}
+<div style="margin-top: 200px">la</div>
+{% block content %}
+    <ul>
+        {% for boardgame in data %}
+            <li>{{ boardgame.name }}, {{ boardgame.year }}</li>
+            <li>{{ boardgame.description }}</li>
+            <li><img style="max-width: 600px" src="{{ boardgame.image_url }}" alt="Boardgame image"></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Search results for: {{ name }}:</h1>
+    <ol>
+        {% for boardgame in data %}
+            <li>{{ boardgame.name }}, {{ boardgame.year }} <a href="{% url 'search-by-id' bgg_id=boardgame.bgg_id %}">Details</a></li>
+        {% endfor %}
+    </ol>
+
+{% endblock %}
