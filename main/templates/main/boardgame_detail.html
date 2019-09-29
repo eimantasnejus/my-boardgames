@@ -1,0 +1,22 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Title: {{ boardgame.name }}</h1>
+
+  <p><strong>Author:</strong> <a href=" {{ boardgame.author.get_absolute_url }}">{{ boardgame.author }}</a></p> <!-- author detail link not yet defined -->
+  <p><strong>Summary:</strong> {{ boardgame.summary }}</p>
+  <p><strong>Genre:</strong> {% for genre in boardgame.genre.all %} {{ genre }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+
+  <div style="margin-left:20px;margin-top:20px">
+    <h4>Playthroughs</h4>
+
+    {% for playthrough in boardgame.playthrough_set.all %}
+      <hr>
+      {% if playthrough %}
+        <p><strong>Date played:</strong> {{playthrough.date}}</p>
+      {% endif %}
+      <p><strong>Location:</strong> {{playthrough.location}}</p>
+      <p class="text-muted"><strong>Id:</strong> {{playthrough.id}}</p>
+    {% endfor %}
+  </div>
+{% endblock %}

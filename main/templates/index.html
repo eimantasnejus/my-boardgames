@@ -1,14 +1,20 @@
-{% extends "base_generic.html" %}
-
+{% extends 'base_generic.html' %}
 {% block content %}
-  <h1>My Boardgames Collection</h1>
-  <p>Welcome to MyBoardgames, a website developed by <em>Eimantas Nejus</em>!</p>
-  <h2>Some Stats</h2>
-  <p>My Boardgames Collection has the following record counts:</p>
-  <ul>
-    <li><strong>Boardgames:</strong> {{ num_books }}</li>
-    <li><strong>Playthrougs:</strong> {{ num_instances }}</li>
-    <li><strong>Authors:</strong> {{ num_authors }}</li>
-    <li><strong>Genres:</strong> {{ num_genres }}</li>
-  </ul>
+<main role="main" class="container">
+    <div class="starter-template">
+        <h1>My Boardgames Collection</h1>
+        <p>Welcome to MyBoardgames, a website developed by <em>Eimantas Nejus</em>!</p>
+        <img src="https://cf.geekdo-images.com/imagepage/img/-nnzXSm6wDQvH5lckCzUtaaprGE=/fit-in/900x600/filters:no_upscale()/pic2437871.jpg" class="rounded float-left" alt="...">
+        <h2>Some Stats</h2>
+        <p>My Boardgames Collection has the following record counts:</p>
+        <ul>
+            <li><strong>Boardgames:</strong> {{ num_books }}</li>
+            <li><strong>Playthrougs:</strong> {{ num_instances }}</li>
+            <li><strong>Authors:</strong> {{ num_authors }}</li>
+            <li><strong>Genres:</strong> {{ num_genres }}</li>
+            <li><strong>Locations:</strong> {{ num_locations }}</li>
+        </ul>
+        <p>You have visited this page {{ num_visits }}{% if num_visits == 1 %} time{% else %} times{% endif %}.</p>
+    </div>
+</main><!-- /.container -->
 {% endblock %}

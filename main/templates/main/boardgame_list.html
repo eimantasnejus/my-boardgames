@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Boardgame List</h1>
+  {% if boardgame_list %}
+  <ul>
+    {% for boardgame in boardgame_list %}
+      <li>
+        <a href="{{ boardgame.get_absolute_url }}">{{ boardgame.name }}</a> ({{boardgame.author}})
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>There are no boardgames in the library.</p>
+  {% endif %}
+{% endblock %}

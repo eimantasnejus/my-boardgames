@@ -1,0 +1,17 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Author: {{ author.first_name }}, {{ author.last_name }}</h1>
+
+  <div style="margin-left:20px;margin-top:20px">
+    <h4>Boardgames:</h4>
+
+    {% for boardgame in author.boardgame_set.all %}
+      <hr>
+      {% if boardgame %}
+        <p><strong>Title:</strong> <a href=" {{ boardgame.get_absolute_url }}">{{ boardgame.name }}</a></p>
+      {% endif %}
+      <p><strong>Genre:</strong> {% for genre in boardgame.genre.all %} {{ genre }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+    {% endfor %}
+  </div>
+{% endblock %}
