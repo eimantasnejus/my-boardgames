@@ -1,3 +1,4 @@
+import ast
 import re
 import requests
 import xml.etree.ElementTree as ET
@@ -7,7 +8,7 @@ from main.models import Boardgame, Author, Playthrough, Genre, Location
 
 
 def clean_html(raw_html):
-    cleaner = re.compile('<.*?>')
+    cleaner = re.compile('<.*?>|&.*?;')
     clean_text = re.sub(cleaner, ' ', raw_html)
     return clean_text
 
@@ -64,29 +65,54 @@ def search_by_name(request):
     return render(request, 'main/search_by_name.html', context)
 
 
-def search_by_id(request, bgg_id):
-    url = "https://www.boardgamegeek.com/xmlapi/game/" + bgg_id
-    querystring = {"search": request.GET.get('id')}
-    headers = {
-        'cache-control': "no-cache",
+def get_boardgame_dict(xml, *args):
+    """Return boardgame_dict, filled with key - value pairs extracted from xml."""
+    boardgame_dict = {
+        'name': xml.findall("name[@primary='true']")[0].text,
+        'bgg_id': xml.attrib.get('objectid')
     }
-    response = requests.request("GET", url, headers=headers, params=querystring)
-    root = ET.ElementTree(ET.fromstring(response.text)).getroot()
-    data = []
-    for boardgame in root:
-        name = boardgame.find('name').text
-        year = boardgame.find('yearpublished').text if boardgame.find('yearpublished') is not None else "-"
-        description = clean_html(boardgame.find('description').text)
-        image_url = boardgame.find('image').text
-        data.append({
-            'name': name,
-            'year': year,
-            'description': description,
-            'image_url': image_url,
+    for parameter in args:
+        boardgame_dict.update({
+            parameter: clean_html(xml.find(parameter).text) if xml.find(parameter) is not None else "-"
         })
-    context = {
-        'data': data
-    }
+    return boardgame_dict
+
+
+def search_by_id(request, bgg_id):
+    """Return rendered template representing selected information from bgg."""
+    boardgame = {}
+    if request.method == 'POST':
+        context = {'request_type': 'POST'}
+        boardgame = request.POST.get('boardgame')
+        if boardgame:
+            boardgame = ast.literal_eval(boardgame)
+            if boardgame.get('bgg_id') and Boardgame.objects.filter(bgg_id=boardgame.get('bgg_id')):
+                context.update({'status': 'existing'})
+            else:
+                Boardgame.objects.create(
+                    name=boardgame.get('name'),
+                    year_published=boardgame.get('yearpublished'),
+                    min_players=boardgame.get('minplayers'),
+                    max_players=boardgame.get('maxplayers'),
+                    min_playtime=boardgame.get('minplaytime'),
+                    max_playtime=boardgame.get('maxplaytime'),
+                    image_url=boardgame.get('image'),
+                    thumbnail_url=boardgame.get('thumbnail'),
+                    summary=boardgame.get('description'),
+                    bgg_id=boardgame.get('bgg_id')
+                )
+                context.update({'status': 'existing'})
+    else:
+        url = "https://www.boardgamegeek.com/xmlapi/game/" + bgg_id
+        querystring = {"search": request.GET.get('id')}
+        response = requests.request("GET", url, params=querystring)
+        root = ET.ElementTree(ET.fromstring(response.text)).getroot()
+        for boardgame_xml in root:
+            boardgame_dict = get_boardgame_dict(boardgame_xml, 'yearpublished', 'minplayers', 'maxplayers',
+                                                'minplaytime', 'maxplaytime', 'description', 'image', 'thumbnail')
+            boardgame = boardgame_dict
+        context = {'request_type': 'GET'}
+    context.update({'boardgame': boardgame})
     return render(request, 'main/search_by_id.html', context)
 
 

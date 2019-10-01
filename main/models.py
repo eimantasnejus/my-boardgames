@@ -4,10 +4,15 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.urls import reverse  # Used to generate URLs by reversing the URL patterns
 
+class Category(models.Model):
+    """Model representing boardgame category."""
+    name = models.TextField(max_length=100)
+    bgg_id = models.IntegerField(null=True)
 
 class Genre(models.Model):
     """Model representing a board game genre."""
     name = models.CharField(max_length=200, help_text='Enter a board game genre (e.g. Roll of the Die)')
+    bgg_id = models.IntegerField(null=True)
 
     def __str__(self):
         """String for representing the Model object."""
@@ -32,16 +37,18 @@ class Player(models.Model):
 class Boardgame(models.Model):
     """Model representing a general board game."""
     name = models.CharField(max_length=200)
-    author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True)
-    summary = models.TextField(max_length=1000, help_text='Enter a brief description of the board game')
-    # ManyToManyField used because genre can contain many board games. Board games can cover many genres.
-    # Genre class has already been defined so we can specify the object above.
-    genre = models.ManyToManyField(Genre, help_text='Select a genre for this board game')
-    expected_playtime = models.FloatField(default=0.0)
-    bgg_overall_rating = models.IntegerField(null=True)
-    picture = models.CharField(null=True, max_length=500)
+    year_published = models.IntegerField(null=True)
     min_players = models.IntegerField(null=True)
     max_players = models.IntegerField(null=True)
+    min_playtime = models.IntegerField(null=True)
+    max_playtime = models.IntegerField(null=True)
+    image_url = models.TextField(max_length=1000, null=True)
+    thumbnail_url = models.TextField(max_length=1000, null=True)
+    author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True)
+    summary = models.TextField(max_length=1000, help_text='Enter a brief description of the board game')
+    genre = models.ManyToManyField(Genre, help_text='Select a genre for this board game')
+    bgg_overall_rating = models.IntegerField(null=True)
+    bgg_id = models.IntegerField(null=True)
 
     def __str__(self):
         """String for representing the Model object."""

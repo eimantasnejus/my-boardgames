@@ -2,10 +2,19 @@
 <div style="margin-top: 200px">la</div>
 {% block content %}
     <ul>
-        {% for boardgame in data %}
-            <li>{{ boardgame.name }}, {{ boardgame.year }}</li>
-            <li>{{ boardgame.description }}</li>
-            <li><img style="max-width: 600px" src="{{ boardgame.image_url }}" alt="Boardgame image"></li>
-        {% endfor %}
+        <li>{{ boardgame.name }}, {{ boardgame.yearpublished }}</li>
+        <li>Players: {{ boardgame.minplayers }} - {{ boardgame.maxplayers }}</li>
+        <li>Playtime: {{ boardgame.minplaytime }} - {{ boardgame.maxplaytime }} mins.</li>
+        <li>{{ boardgame.description }}</li>
+        <li><img style="max-width: 600px" src="{{ boardgame.image }}" alt="Boardgame image"></li>
     </ul>
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="boardgame" value="{{boardgame}}">
+        {% if request_type == 'GET' %}
+        <button class="btn btn-primary" type="submit">Add</button>
+        {% elif request_type == 'POST' %}
+        <button class="btn btn-success" disabled>Success</button>
+        {% endif %}
+    </form>
 {% endblock %}
