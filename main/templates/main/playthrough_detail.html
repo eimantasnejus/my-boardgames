@@ -2,5 +2,11 @@
 
 {% block content %}
   <h1>{{ playthrough.boardgame }}</h1>
-
+    <ul>
+    <li>Players : {% for player in playthrough.players.all %} {{ player }},  {% endfor %}</li>
+    <li>Playtime: {{ playthrough.playtime }} h</li>
+    <li>Rating: {{ playthrough.rating }} / 10.0</li>
+    <li>Location: {{ playthrough.location }}</li>
+    <li>Datetime: {{ playthrough.datetime }}</li>
+    </ul>
 {% endblock %}

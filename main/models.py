@@ -80,6 +80,7 @@ class Playthrough(models.Model):
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True)
     players = models.ManyToManyField(Player, help_text='Add players who participate in this game.')
     playtime = models.FloatField(null=True)
+    rating = models.FloatField(null=True)
     # TODO: bool - explaining rules
     # TODO: score - each player
 
