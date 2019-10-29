@@ -1,0 +1,23 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>My Playthrougs:</h1>
+  {% if user.is_authenticated %}
+    {% if playthrough_list %}
+      <ul>
+        {% for playthrough in playthrough_list %}
+          <li>
+            <a href="{{ playthrough.get_absolute_url }}">{{ playthrough.boardgame }}, {{ playthrough.datetime }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>There are no playthrougs.</p>
+    {% endif %}
+  {% else %}
+      <p>User not authenticated.</p>
+  {% endif %}
+  <form action={% url 'playthrough-create' %}> {% csrf_token %}
+     <button class="btn btn-success" type="submit">Add New</button>
+  </form>
+{% endblock %}

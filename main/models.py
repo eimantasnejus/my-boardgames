@@ -33,6 +33,10 @@ class Player(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
 
+    def __str__(self):
+        """String for representing the Model object."""
+        return ' '.join([self.first_name, self.last_name])
+
 
 class Boardgame(models.Model):
     """Model representing a general board game."""
@@ -76,6 +80,8 @@ class Playthrough(models.Model):
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True)
     players = models.ManyToManyField(Player, help_text='Add players who participate in this game.')
     playtime = models.FloatField(null=True)
+    # TODO: bool - explaining rules
+    # TODO: score - each player
 
     class Meta:
         ordering = ['datetime']
@@ -83,6 +89,10 @@ class Playthrough(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.datetime} ({self.boardgame.name})'
+
+    def get_absolute_url(self):
+        """Returns the url to access a detail record for this playthrough."""
+        return reverse('playthrough-detail', args=[str(self.id)])
 
 
 class Author(models.Model):

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from main.models import Boardgame, Author, Playthrough, Genre, Location
+from main.models import Boardgame, Author, Playthrough, Genre, Location, Player
 
 
 class PlaythroughInline(admin.TabularInline):
@@ -30,4 +30,9 @@ class GenreAdmin(admin.ModelAdmin):
 
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Player)
+class PlayerAdmin(admin.ModelAdmin):
     pass

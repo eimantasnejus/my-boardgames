@@ -4,6 +4,7 @@ import requests
 import xml.etree.ElementTree as ET
 from django.shortcuts import render
 from django.views import generic
+from main.forms import PlaythroughForm
 from main.models import Boardgame, Author, Playthrough, Genre, Location
 
 
@@ -116,6 +117,28 @@ def search_by_id(request, bgg_id):
     return render(request, 'main/search_by_id.html', context)
 
 
+def playthrough_create_view(request):
+    """Form to register a new playthrough."""
+    if request.method == 'GET':
+        print("TRIGERED GET")
+        form = PlaythroughForm(request.POST or None)
+        if form.is_valid():
+            form.save()
+        context = {
+            'form': form
+        }
+        return render(request, "main/playthrough_create.html", context)
+    elif request.method == 'POST':
+        print("TRIGERED POST")
+        form = PlaythroughForm(request.POST or None)
+        if form.is_valid():
+            form.save()
+        context = {
+            'playthrough_list': Playthrough.objects.all()
+        }
+        return render(request, "main/playthrough_list.html", context)
+
+
 class BoardgameListView(generic.ListView):
     model = Boardgame
     paginate_by = 10
@@ -133,4 +156,18 @@ class AuthorListView(generic.ListView):
 
 class AuthorDetailView(generic.DetailView):
     model = Author
+
+
+class UserPlaythroughListView(generic.ListView):
+    model = Playthrough
+    queryset = Playthrough.objects.all()
     paginate_by = 10
+
+
+class UserPlaythroughDetailView(generic.DetailView):
+    model = Playthrough
+
+    @staticmethod
+    def get_boardgame_name(boardgame_id):
+        """Return selected boardgame name."""
+        return Boardgame.objects.get(pk=boardgame_id).name
